@@ -7,6 +7,10 @@ import GraphQLClientFactory from './lib/GraphQLClientFactory';
 import config from './temp/config';
 import i18ninit from './i18n';
 
+import registerServiceWorker from "./registerServiceWorker";
+import {runWithAdal} from "react-adal";
+import {authContext} from "./adal/AdalConfig";
+
 /* eslint-disable no-underscore-dangle */
 
 let renderFunction = ReactDOM.render;
@@ -52,12 +56,19 @@ i18ninit().then(() => {
   // HTML element to place the app into
   const rootElement = document.getElementById('root');
 
-  renderFunction(
-    <AppRoot
-      path={window.location.pathname}
-      Router={BrowserRouter}
-      graphQLClient={graphQLClient}
-    />,
-    rootElement
-  );
+  runWithAdal( authContext, () => {
+
+      renderFunction(
+        <AppRoot
+          path={window.location.pathname}
+          Router={BrowserRouter}
+          graphQLClient={graphQLClient}
+        />,
+        rootElement
+      );
+
+  }, false);
+
 });
+
+registerServiceWorker();
